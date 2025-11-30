@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 3D Model Generator - Create 3D Models from Text</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .model-preview {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .model-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .download-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .download-btn {
+            padding: 12px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .example-chip {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .example-chip:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .tagline {
+                font-size: 1.1em;
+            }
+            
+            .main-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI 3D Model Generator</h1>
+            <p class="tagline">Transform your ideas into 3D models with AI - Perfect for 3D printing</p>
+        </header>
+
+        <div class="main-card">
+            <div class="input-section">
+                <label for="prompt">Describe your 3D model:</label>
+                <textarea id="prompt" placeholder="Example: A futuristic robot with articulated joints, suitable for 3D printing..."></textarea>
+                
+                <div class="examples">
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 5px;">Quick examples:</p>
+                    <div class="example-chips">
+                        <span class="example-chip" onclick="setPrompt('A detailed dragon figurine with scales and wings')">Dragon Figurine</span>
+                        <span class="example-chip" onclick="setPrompt('Modern minimalist vase with geometric patterns')">Geometric Vase</span>
+                        <span class="example-chip" onclick="setPrompt('Articulated robot action figure with movable joints')">Robot Figure</span>
+                        <span class="example-chip" onclick="setPrompt('Fantasy castle with towers and walls')">Castle Model</span>
+                        <span class="example-chip" onclick="setPrompt('Ergonomic phone stand with cable management')">Phone Stand</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="options-grid">
+                <div class="option-group">
+                    <label for="style">Model Style:</label>
+                    <select id="style">
+                        <option value="realistic">Realistic</option>
+                        <option value="stylized">Stylized</option>
+                        <option value="low-poly">Low Poly</option>
+                        <option value="high-detail">High Detail</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="format">Export Format:</label>
+                    <select id="format">
+                        <option value="stl">STL (3D Printing)</option>
+                        <option value="obj">OBJ (Universal)</option>
+                        <option value="fbx">FBX (Animation)</option>
+                        <option value="gltf">GLTF (Web)</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="quality">Quality:</label>
+                    <select id="quality">
+                        <option value="draft">Draft (Fast)</option>
+                        <option value="standard" selected>Standard</option>
+                        <option value="high">High Quality</option>
+                        <option value="ultra">Ultra (Slow)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateModel()">
+                ✨ Generate 3D Model
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your 3D model... This may take a moment.</p>
+            </div>
+
+            <div class="result-section" id="result">
+                <h2 style="margin-bottom: 20px; color: #667eea;">Your 3D Model</h2>
+                <div class="model-preview">
+                    <img id="modelPreview" class="model-image" alt="3D Model Preview">
+                    <p style="margin-top: 15px; color: #666;">Preview of your generated 3D model</p>
+                </div>
+                
+                <div class="download-section">
+                    <button class="download-btn" onclick="downloadModel('stl')">📥 Download STL</button>
+                    <button class="download-btn" onclick="downloadModel('obj')">📥 Download OBJ</button>
+                    <button class="download-btn" onclick="downloadModel('fbx')">📥 Download FBX</button>
+                    <button class="download-btn" onclick="downloadModel('gltf')">📥 Download GLTF</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI-Powered</div>
+                <div class="feature-desc">Advanced AI generates high-quality 3D models from simple text descriptions</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🖨️</div>
+                <div class="feature-title">3D Print Ready</div>
+                <div class="feature-desc">Models optimized for 3D printing with proper geometry and manifold meshes</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Fast Generation</div>
+                <div class="feature-desc">Get your 3D models in seconds, not hours of manual modeling</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">Multiple Styles</div>
+                <div class="feature-desc">Choose from realistic, stylized, low-poly, and high-detail styles</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 AI 3D Model Generator | Powered by Advanced AI Technology</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Create amazing 3D models for printing, games, and visualization</p>
+        </footer>
+    </div>
+
+    <script>
+        function setPrompt(text) {
+            document.getElementById('prompt').value = text;
+        }
+
+        function generateModel() {
+            const prompt = document.getElementById('prompt').value.trim();
+            
+            if (!prompt) {
+                alert('Please enter a description for your 3D model');
+                return;
+            }
+
+            const style = document.getElementById('style').value;
+            const format = document.getElementById('format').value;
+            const quality = document.getElementById('quality').value;
+
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').classList.remove('active');
+            document.querySelector('.generate-btn').disabled = true;
+
+            // Simulate AI generation (in real implementation, this would call your AI API)
+            setTimeout(() => {
+                // Hide loading
+                document.getElementById('loading').classList.remove('active');
+                document.querySelector('.generate-btn').disabled = false;
+
+                // Show result with placeholder
+                document.getElementById('result').classList.add('active');
+                
+                // In real implementation, this would be the actual generated model preview
+                document.getElementById('modelPreview').src = 'https://via.placeholder.com/600x400/667eea/ffffff?text=3D+Model+Preview';
+                
+                // Scroll to result
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 3000);
+        }
+
+        function downloadModel(format) {
+            alert(`Downloading model in ${format.toUpperCase()} format...\n\nIn a production version, this would download your generated 3D model file.`);
+            
+            // In real implementation, this would trigger actual file download
+            console.log(`Download initiated for format: ${format}`);
+        }
+
+        // Add enter key support for textarea (Ctrl+Enter to generate)
+        document.getElementById('prompt').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateModel();
+            }
+        });
+    </script>
+</body>
+</html>
