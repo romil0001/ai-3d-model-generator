@@ -1,20 +1,47 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# GreenCart Grocery (Netlify + Stripe)
 
-# Run and deploy your AI Studio app
+A lightweight grocery ecommerce storefront built with React + Vite.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1fdqllO37WwJ25HOvIPP-WXvqnoX_F-L3
+- Browse grocery products and build a cart
+- Secure Stripe Checkout payment flow
+- Netlify Function to create Stripe checkout sessions
+- Ready-to-deploy Netlify configuration (`netlify.toml`)
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Local development
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm install
+   ```
+2. Create a `.env` file and add:
+   ```bash
+   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   STRIPE_SECRET_KEY=sk_test_...
+   ```
+3. Run the app with Netlify functions:
+   ```bash
+   npx netlify dev
+   ```
+
+## Deploy to Netlify (GitHub)
+
+1. Push this repo to GitHub.
+2. In Netlify, choose **Add new site → Import an existing project**.
+3. Select your GitHub repo.
+4. Build settings are auto-detected from `netlify.toml`:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Functions directory: `netlify/functions`
+5. Add environment variables in Netlify:
+   - `VITE_STRIPE_PUBLISHABLE_KEY`
+   - `STRIPE_SECRET_KEY`
+6. Deploy.
+
+## Stripe setup notes
+
+- Use Stripe test keys while validating checkout.
+- Enable card payments in your Stripe dashboard.
+- After deployment, run a test payment using a Stripe test card (for example `4242 4242 4242 4242`).
+

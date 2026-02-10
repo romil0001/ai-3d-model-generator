@@ -1,0 +1,169 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.4;
+  color: #082f1f;
+  background: #f5fbf5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.hero h1 {
+  margin: 0.4rem 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.hero p {
+  max-width: 680px;
+  color: #35654a;
+}
+
+.eyebrow {
+  color: #157f3f;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.2rem;
+}
+
+
+.status {
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  margin: 0.8rem 0;
+  font-weight: 600;
+}
+
+.status.success {
+  background: #ddfbe7;
+  color: #0b6e34;
+}
+
+.status.cancel {
+  background: #fff1d6;
+  color: #8a5a00;
+}
+
+.layout {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  margin-top: 2rem;
+}
+
+.products {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card,
+.cart-panel {
+  background: white;
+  border: 1px solid #d6ecd8;
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.card h2,
+.cart-panel h2 {
+  margin: 0.4rem 0;
+  font-size: 1.1rem;
+}
+
+.card p {
+  color: #467456;
+  min-height: 2.6rem;
+}
+
+.emoji {
+  font-size: 2rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.8rem 0;
+}
+
+.qty-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.qty-controls button,
+.checkout-btn {
+  background: #198745;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.qty-controls button {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.1rem;
+}
+
+.qty-controls button:disabled,
+.checkout-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cart-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cart-panel li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #ebf6ed;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.checkout-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.empty,
+.error {
+  color: #567663;
+}
+
+.error {
+  color: #b0123e;
+}
+
+@media (max-width: 900px) {
+  
+.layout {
+    grid-template-columns: 1fr;
+  }
+}
